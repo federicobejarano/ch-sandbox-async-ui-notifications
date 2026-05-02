@@ -6,4 +6,11 @@ export const routes: Routes = [
     redirectTo: 'admin/affiliations',
     pathMatch: 'full',
   },
+  {
+    path: 'admin/affiliations',
+    loadComponent: () =>
+      import('./pages/admin-affiliations/admin-affiliations.page').then(
+        m => m.AdminAffiliationsPage,
+      ),
+  },
 ];
