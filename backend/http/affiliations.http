@@ -63,4 +63,32 @@ Content-Type: application/json
 GET {{baseUrl}}/api/affiliations/changes?since={{sinceFirst}}
 If-None-Match: {{etag1}}
 
+### Actividad 22 — Smoke test del stream SSE con curl -N (dos terminales)
+### Por qué curl -N: sin --no-buffer, curl acumula el cuerpo en bloques y no ves el stream en tiempo real
+### (Postman clásico también bufferea hasta el cierre — malo para SSE).
+###
+### Terminal A (dejar colgado):
+###   curl -N -sS http://localhost:8080/api/affiliations/stream
+### Esperado: cabeceras HTTP/1.1 200; luego cada ~30s líneas de comment SSE con el texto "heartbeat"
+### (formato SSE: línea que empieza con ":").
+###
+### Terminal B: ejecutar el POST siguiente con este cliente HTTP, o bien:
+###   curl -sS -X POST http://localhost:8080/api/affiliations -H "Content-Type: application/json" \
+###     -d '{"fullName":"Curl SSE","email":"curl.sse@example.com","reason":"Actividad 22"}'
+###
+### Terminal A: en pocos ms debe aparecer un frame con name affiliation-created, id numérico y data JSON.
+### El orden de líneas (id vs event) puede variar según el encoder de Spring; en SSE todas son válidas.
+### Ejemplo típico:
+###   event:affiliation-created
+###   id:<id>
+###   data:{"id":<id>,"fullName":"Curl SSE",...}
+POST {{baseUrl}}/api/affiliations
+Content-Type: application/json
+
+{
+  "fullName": "Curl SSE Smoke",
+  "email": "curl.sse.smoke@example.com",
+  "reason": "Actividad 22 — POST mientras curl -N escucha el stream"
+}
+
 ###
