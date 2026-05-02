@@ -16,4 +16,13 @@ Content-Type: application/json
   "reason": "HTTP Client smoke test — write path"
 }
 
+### Actividad 14 — GET paginado + ETag (default: size=20, sort=createdAt,desc)
+### Esperado: 200, body Page JSON, header ETag (p. ej. W/"<epochMillis>")
+GET {{baseUrl}}/api/affiliations
+
+### Misma petición con validación condicional — tras copiar el ETag del response anterior:
+### Esperado: 304 Not Modified, body vacío
+GET {{baseUrl}}/api/affiliations
+If-None-Match: W/"0"
+
 ###

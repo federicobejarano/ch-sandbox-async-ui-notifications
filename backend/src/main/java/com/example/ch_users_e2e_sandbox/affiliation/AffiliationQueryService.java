@@ -3,6 +3,8 @@ package com.example.ch_users_e2e_sandbox.affiliation;
 import com.example.ch_users_e2e_sandbox.affiliation.dto.AffiliationResponse;
 import java.time.Instant;
 import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,6 +15,11 @@ public class AffiliationQueryService {
 
 	public AffiliationQueryService(AffiliationRepository repository) {
 		this.repository = repository;
+	}
+
+	@Transactional(readOnly = true)
+	public Page<AffiliationResponse> findPage(Pageable pageable) {
+		return repository.findAll(pageable).map(AffiliationResponse::from);
 	}
 
 	@Transactional(readOnly = true)
