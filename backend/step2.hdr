@@ -1,0 +1,7 @@
+HTTP/1.1 304 
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+ETag: W/"1777736009218"
+Date: Sat, 02 May 2026 15:33:29 GMT
+

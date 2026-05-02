@@ -64,6 +64,7 @@ public class AffiliationController {
 				.path("/{id}")
 				.buildAndExpand(body.id())
 				.toUri();
-		return ResponseEntity.created(location).body(body);
+		String eTag = affiliationQueryService.computeEtag();
+		return ResponseEntity.created(location).header(HttpHeaders.ETAG, eTag).body(body);
 	}
 }

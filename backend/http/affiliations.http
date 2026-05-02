@@ -25,4 +25,42 @@ GET {{baseUrl}}/api/affiliations
 GET {{baseUrl}}/api/affiliations
 If-None-Match: W/"0"
 
+### Actividad 16 — Validación empírica del 304 Not Modified en GET /api/affiliations/changes
+### Prerrequisito: backend en 8080. Tras un reinicio, la tabla está vacía y ETag base es W/"0".
+### Sustituye @etag1 y @sinceFirst por los valores de las respuestas (el ETag en If-None-Match va exactamente como en el header ETag).
+
+@epochSince = 1970-01-01T00:00:00.000Z
+@etag1 = W/"0"
+@sinceFirst = 1970-01-01T00:00:00.000Z
+
+### 16.1 — POST inicial: esperado 201; copiar header ETag → reasignar @etag1 (ETag1)
+POST {{baseUrl}}/api/affiliations
+Content-Type: application/json
+
+{
+  "fullName": "Actividad 16 — Primera",
+  "email": "act16.first@example.com",
+  "reason": "Semilla para prueba 304 /changes"
+}
+
+### 16.2 — GET /changes con If-None-Match = ETag1 y since = epoch: sin filas nuevas respecto al estado global
+### Colocar en @etag1 el ETag exacto del 16.1. Esperado: 304 Not Modified, body vacío, Content-Length 0.
+GET {{baseUrl}}/api/affiliations/changes?since={{epochSince}}
+If-None-Match: {{etag1}}
+
+### 16.3 — POST segunda afiliación: esperado 201; el ETag del body global cambia (ETag2 en siguientes GET)
+POST {{baseUrl}}/api/affiliations
+Content-Type: application/json
+
+{
+  "fullName": "Actividad 16 — Segunda",
+  "email": "act16.second@example.com",
+  "reason": "Dispara cambio de MAX(createdAt) → invalida ETag1"
+}
+
+### 16.4 — GET /changes con If-None-Match = ETag1 (viejo) y since = createdAt de la primera fila (ISO del JSON del 16.1)
+### Poner en @sinceFirst el campo createdAt de la respuesta 16.1. Esperado: 200, lista con un elemento (la segunda), header ETag distinto a ETag1.
+GET {{baseUrl}}/api/affiliations/changes?since={{sinceFirst}}
+If-None-Match: {{etag1}}
+
 ###
