@@ -3,6 +3,7 @@ package com.example.ch_users_e2e_sandbox.affiliation;
 import com.example.ch_users_e2e_sandbox.affiliation.dto.AffiliationResponse;
 import java.time.Instant;
 import java.util.List;
+import java.util.NoSuchElementException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,13 @@ public class AffiliationQueryService {
 		return repository.findByIdGreaterThanOrderByIdAsc(id).stream()
 				.map(AffiliationResponse::from)
 				.toList();
+	}
+
+	@Transactional(readOnly = true)
+	public AffiliationResponse findById(Long id) {
+		return repository.findById(id)
+				.map(AffiliationResponse::from)
+				.orElseThrow(() -> new NoSuchElementException("Affiliation %d was not found.".formatted(id)));
 	}
 
 	@Transactional(readOnly = true)
