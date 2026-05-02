@@ -3,6 +3,8 @@ package com.example.ch_users_e2e_sandbox.affiliation;
 import com.example.ch_users_e2e_sandbox.affiliation.dto.AffiliationCreateRequest;
 import com.example.ch_users_e2e_sandbox.affiliation.dto.AffiliationResponse;
 import jakarta.validation.Valid;
+import java.time.Instant;
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -41,6 +44,17 @@ public class AffiliationController {
 		}
 		Page<AffiliationResponse> page = affiliationQueryService.findPage(pageable);
 		return ResponseEntity.ok().header(HttpHeaders.ETAG, eTag).body(page);
+	}
+
+	@GetMapping("/changes")
+	public ResponseEntity<List<AffiliationResponse>> changes(
+			@RequestParam Instant since, WebRequest webRequest) {
+		String eTag = affiliationQueryService.computeEtag();
+		if (webRequest.checkNotModified(eTag)) {
+			return ResponseEntity.status(HttpStatus.NOT_MODIFIED).build();
+		}
+		List<AffiliationResponse> deltas = affiliationQueryService.findChangesSince(since);
+		return ResponseEntity.ok().header(HttpHeaders.ETAG, eTag).body(deltas);
 	}
 
 	@PostMapping
