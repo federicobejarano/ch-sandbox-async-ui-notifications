@@ -1,0 +1,19 @@
+### Spike 5 — Actividad 12: smoke test del write path (POST /api/affiliations)
+### Ejecutar con IntelliJ HTTP Client, VS Code REST Client o equivalente.
+### Backend: perfil dev por defecto (puerto 8080). Tras 201, verificar en H2 Console:
+###   JDBC URL: jdbc:h2:mem:testdb  ·  User: sa  ·  Password: (vacío)
+###   SELECT * FROM affiliations;  → fila con created_at no nulo
+
+@baseUrl = http://localhost:8080
+
+### Crear afiliación — esperado: HTTP 201 Created, header Location, body JSON con id y createdAt
+POST {{baseUrl}}/api/affiliations
+Content-Type: application/json
+
+{
+  "fullName": "Smoke Test User",
+  "email": "smoke.test@example.com",
+  "reason": "HTTP Client smoke test — write path"
+}
+
+###
