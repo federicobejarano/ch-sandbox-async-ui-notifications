@@ -23,6 +23,13 @@ public class AffiliationQueryService {
 	}
 
 	@Transactional(readOnly = true)
+	public List<AffiliationResponse> findAfterId(Long id) {
+		return repository.findByIdGreaterThanOrderByIdAsc(id).stream()
+				.map(AffiliationResponse::from)
+				.toList();
+	}
+
+	@Transactional(readOnly = true)
 	public List<AffiliationResponse> findChangesSince(Instant since) {
 		return repository.findByCreatedAtAfterOrderByCreatedAtAsc(since).stream()
 				.map(AffiliationResponse::from)
