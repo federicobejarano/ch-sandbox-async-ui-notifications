@@ -1,3 +1,4 @@
+import { DatePipe, NgFor, NgIf } from '@angular/common';
 import {
   Component,
   effect,
@@ -7,8 +8,15 @@ import {
 } from '@angular/core';
 import { ToastController } from '@ionic/angular';
 import {
+  IonBadge,
+  IonButton,
+  IonButtons,
   IonContent,
   IonHeader,
+  IonItem,
+  IonLabel,
+  IonList,
+  IonNote,
   IonTitle,
   IonToolbar,
 } from '@ionic/angular/standalone';
@@ -18,15 +26,23 @@ import { AffiliationFeedFacade } from '../../services/affiliation-feed.facade';
 @Component({
   standalone: true,
   selector: 'app-admin-affiliations',
-  imports: [IonContent, IonHeader, IonTitle, IonToolbar],
-  template: `
-    <ion-header>
-      <ion-toolbar>
-        <ion-title>Admin · Affiliations</ion-title>
-      </ion-toolbar>
-    </ion-header>
-    <ion-content class="ion-padding"></ion-content>
-  `,
+  imports: [
+    DatePipe,
+    IonBadge,
+    IonButton,
+    IonButtons,
+    IonContent,
+    IonHeader,
+    IonItem,
+    IonLabel,
+    IonList,
+    IonNote,
+    IonTitle,
+    IonToolbar,
+    NgFor,
+    NgIf,
+  ],
+  templateUrl: './admin-affiliations.page.html',
 })
 export class AdminAffiliationsPage implements OnInit {
   readonly facade = inject(AffiliationFeedFacade);

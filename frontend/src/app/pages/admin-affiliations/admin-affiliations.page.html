@@ -1,0 +1,30 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Admin · Affiliations</ion-title>
+    <ion-buttons slot="end">
+      <ion-badge color="danger" class="pulse" *ngIf="facade.unreadCount() > 0">
+        {{ facade.unreadCount() }}
+      </ion-badge>
+      <ion-button (click)="toggleStrategy()">
+        Mode: {{ facade.strategy() }}
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-note>
+    Last latency: {{ facade.latestArrivalLatencyMs() ?? '—' }} ms
+  </ion-note>
+  <ion-list>
+    <ion-item *ngFor="let a of facade.newAffiliations()">
+      <ion-label>
+        <h2>{{ a.fullName }}</h2>
+        <p>{{ a.email }} · {{ a.createdAt | date: 'medium' }}</p>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+  <ion-button expand="block" (click)="facade.markAllRead()">
+    Mark all read
+  </ion-button>
+</ion-content>
