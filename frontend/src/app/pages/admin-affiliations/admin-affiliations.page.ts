@@ -43,6 +43,7 @@ import { AffiliationFeedFacade } from '../../services/affiliation-feed.facade';
     NgIf,
   ],
   templateUrl: './admin-affiliations.page.html',
+  styleUrls: ['./admin-affiliations.page.scss'],
 })
 export class AdminAffiliationsPage implements OnInit {
   readonly facade = inject(AffiliationFeedFacade);
