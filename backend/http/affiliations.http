@@ -92,3 +92,16 @@ Content-Type: application/json
 }
 
 ###
+### Actividad 30 — Protocolo de medición empírica (polling vs SSE)
+### 1) Arrancar backend (8080) + frontend (4200). Abrir /admin/affiliations y elegir Mode.
+### 2) Ráfaga de 10 POST con ~3 s de separación (reproducible):
+###      chmod +x scripts/actividad-30-post-burst.sh && ./scripts/actividad-30-post-burst.sh
+###    En la UI: leer Last latency + mean/median (n crece con cada llegada).
+### 3) Tras cambiar de estrategia con el botón Mode, las muestras se reinician (sesión limpia).
+### 4) Idle 60 s: DevTools Network + Actuator:
+###      curl -sS http://localhost:8080/actuator/metrics/http.server.requests
+###      curl -sS http://localhost:8080/actuator/threads
+###    Polling: ~12 GET /changes en 60 s (304). SSE: ~2 comentarios heartbeat en 60 s.
+### 5) LoC por superficie: ./scripts/spike5-loc-by-strategy.sh
+### 6) Cerrar pestaña / matar backend: ver plan §Actividad 30 (comportamiento y debug subjetivo).
+

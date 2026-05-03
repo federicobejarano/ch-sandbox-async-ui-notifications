@@ -13,8 +13,11 @@
 </ion-header>
 
 <ion-content>
-  <ion-note>
+  <ion-note class="measurement-note">
     Last latency: {{ facade.latestArrivalLatencyMs() ?? '—' }} ms
+    <ng-container *ngIf="facade.latencySampleCount() > 0">
+      · n={{ facade.latencySampleCount() }} · mean={{ (facade.latencyMeanMs()! | number: '1.0-1') }} ms · median={{ (facade.latencyMedianMs()! | number: '1.0-1') }} ms
+    </ng-container>
   </ion-note>
   <ion-list>
     <ion-item *ngFor="let a of facade.newAffiliations()">

@@ -1,4 +1,4 @@
-import { DatePipe, NgFor, NgIf } from '@angular/common';
+import { DatePipe, DecimalPipe, NgFor, NgIf } from '@angular/common';
 import {
   Component,
   effect,
@@ -28,6 +28,7 @@ import { AffiliationFeedFacade } from '../../services/affiliation-feed.facade';
   selector: 'app-admin-affiliations',
   imports: [
     DatePipe,
+    DecimalPipe,
     IonBadge,
     IonButton,
     IonButtons,
@@ -67,6 +68,7 @@ export class AdminAffiliationsPage implements OnInit {
   }
 
   toggleStrategy(): void {
+    this.facade.resetMeasurementSamples();
     this.facade.strategy.update(s => (s === 'polling' ? 'sse' : 'polling'));
   }
 

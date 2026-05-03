@@ -25,6 +25,8 @@ export class AffiliationFeedFacade {
 
   private readonly writableNewAffiliations = signal<AffiliationDto[]>([]);
   private readonly writableLatestArrivalLatencyMs = signal<number | null>(null);
+  /** Session samples for Actividad 30 empirical protocol (mean/median). */
+  private readonly writableLatencySamplesMs = signal<number[]>([]);
 
   private connectionEffectRef: EffectRef | null = null;
 
@@ -34,6 +36,30 @@ export class AffiliationFeedFacade {
   readonly unreadCount = computed(() => this.writableNewAffiliations().length);
   readonly latestArrivalLatencyMs: Signal<number | null> =
     this.writableLatestArrivalLatencyMs.asReadonly();
+
+  readonly latencySampleCount = computed(
+    () => this.writableLatencySamplesMs().length,
+  );
+
+  readonly latencyMeanMs = computed(() => {
+    const xs = this.writableLatencySamplesMs();
+    if (xs.length === 0) {
+      return null;
+    }
+    return xs.reduce((sum, x) => sum + x, 0) / xs.length;
+  });
+
+  readonly latencyMedianMs = computed(() => {
+    const xs = this.writableLatencySamplesMs();
+    if (xs.length === 0) {
+      return null;
+    }
+    const sorted = [...xs].sort((a, b) => a - b);
+    const mid = Math.floor(sorted.length / 2);
+    return sorted.length % 2 === 1
+      ? sorted[mid]!
+      : (sorted[mid - 1]! + sorted[mid]!) / 2;
+  });
 
   constructor() {
     this.destroyRef.onDestroy(() => {
@@ -67,6 +93,12 @@ export class AffiliationFeedFacade {
     this.writableNewAffiliations.set([]);
   }
 
+  /** Clears accumulated latency samples (e.g. after switching transport strategy). */
+  resetMeasurementSamples(): void {
+    this.writableLatencySamplesMs.set([]);
+    this.writableLatestArrivalLatencyMs.set(null);
+  }
+
   private ingestBatch(rows: AffiliationDto[]): void {
     if (rows.length === 0) {
       return;
@@ -78,6 +110,16 @@ export class AffiliationFeedFacade {
     this.writableLatestArrivalLatencyMs.set(
       arrivedAt - new Date(newest.createdAt).getTime(),
     );
+
+    this.writableLatencySamplesMs.update(previous => {
+      const next = [...previous];
+      for (const row of rows) {
+        next.push(arrivedAt - new Date(row.createdAt).getTime());
+      }
+      const cap = 512;
+      return next.length > cap ? next.slice(-cap) : next;
+    });
+
     this.writableNewAffiliations.update(previous => [...rows, ...previous]);
   }
 }
